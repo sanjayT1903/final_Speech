@@ -49,10 +49,20 @@ if subscription_key and json_file:
             client = gspread.authorize(creds)
             
             sh = client.open('ResultsSpeech').worksheet('Sheet1')
-            row = [result.text, "True"]
-            sh.append_row(row)
+            
+            # Add buttons for feedback
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button('Bad', key='bad', type='primary', help='Click if the recognition was bad', use_container_width=True):
+                    row = [result.text, "False"]
+                    sh.append_row(row)
+                    st.write("Feedback recorded: Bad")
+            with col2:
+                if st.button('Good', key='good', type='secondary', help='Click if the recognition was good', use_container_width=True):
+                    row = [result.text, "True"]
+                    sh.append_row(row)
+                    st.write("Feedback recorded: Good")
 
-            st.write("Result saved to Google Sheets.")
         else:
             st.write("Speech could not be recognized. Reason: {}".format(result.reason))
 else:
